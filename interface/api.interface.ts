@@ -2,7 +2,9 @@
 /**分类-新增 */
 export interface _IPostClassifyNew {
     classifyTitle: string
-    [ key: string ]: string
+    children: Array<{
+         [ key in keyof IClassifyNew | 'key' ]: string 
+    }>
 }
 
 export interface IPostClassifyNew_ {
@@ -17,4 +19,11 @@ export interface __IPostClassifyNew {
         classifyName: string
         keyCode: string
     }> | string
+}
+
+
+interface IClassifyNew {
+    classifyName: string
+    classifyInfo: string
+    imgURL: string
 }

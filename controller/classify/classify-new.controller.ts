@@ -2,7 +2,7 @@ import * as Koa from 'koa';
 import * as Request from 'superagent';
 import { AppConfig } from '../../config/app.config';
 
-import { _IPostClassifyNew, __IPostClassifyNew } from '../../interface/api.interface';
+import { _IPostClassifyNew, __IPostClassifyNew, IPostClassifyNew_ } from '../../interface/api.interface';
 
 /**类别-新增 */
 export let classifyNew = async( ctx: Koa.Context ) => {
@@ -45,7 +45,10 @@ export let classifyNew = async( ctx: Koa.Context ) => {
          } as __IPostClassifyNew)
 
     /**返回数据 */
-    ctx.body = result.text;
+    ctx.body = result.text || {
+        msg: 'error',
+        status: '500'
+    } as IPostClassifyNew_
 
 
 }

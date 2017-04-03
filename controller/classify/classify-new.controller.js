@@ -77,7 +77,10 @@ exports.classifyNew = function (ctx) { return __awaiter(_this, void 0, void 0, f
             case 2:
                 result = _a.sent();
                 /**返回数据 */
-                ctx.body = result.text;
+                ctx.body = result.text || {
+                    msg: 'error',
+                    status: '500'
+                };
                 return [2 /*return*/];
         }
     });
