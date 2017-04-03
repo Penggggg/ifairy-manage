@@ -1,9 +1,13 @@
 import * as fs from 'fs';
+import { classifyNew } from './classify/classify-new.controller';
 
 export default ( router ) => {
 
     /**首页 */
-    router.get('/', getIndex )
+    router.get('/', getIndex );
+
+    /**分类-新增 */
+    router.post('/mapi/v1/classify-new', classifyNew )
 
 }
 

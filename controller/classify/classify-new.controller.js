@@ -34,22 +34,60 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
-var fs = require("fs");
-var classify_new_controller_1 = require("./classify/classify-new.controller");
-exports.default = function (router) {
-    /**首页 */
-    router.get('/', getIndex);
-    /**分类-新增 */
-    router.post('/mapi/v1/classify-new', classify_new_controller_1.classifyNew);
-};
-function getIndex(ctx) {
-    return __awaiter(this, void 0, void 0, function () {
-        var a;
-        return __generator(this, function (_a) {
-            a = fs.readFileSync('./dist/index.html', 'utf8');
-            ctx.body = a;
-            return [2 /*return*/];
-        });
+var Request = require("superagent");
+var app_config_1 = require("../../config/app.config");
+/**类别-新增 */
+exports.classifyNew = function (ctx) { return __awaiter(_this, void 0, void 0, function () {
+    var classifyTitle, allClassify, allClassifyLength, metaData, classifyChildren, children, result;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                classifyTitle = ctx.request.body.classifyTitle;
+                return [4 /*yield*/, Request.get(app_config_1.AppConfig.reqUrl + "/mapi/v1/classify-all")];
+            case 1:
+                allClassify = _a.sent();
+                allClassifyLength = allClassify.body.length;
+                metaData = {
+                    classifyTitle: '',
+                    keyCode: '',
+                    children: []
+                };
+                /**赋值 */
+                metaData.classifyTitle = classifyTitle;
+                metaData.keyCode = transformKeyCode(allClassifyLength);
+                classifyChildren = ctx.request.body;
+                delete classifyChildren['classifyTitle'];
+                children = Object.keys(classifyChildren).map(function (key) { return ({
+                    classifyName: ctx.request.body["" + key],
+                    keyCode: transformKeyCode(Number(key))
+                }); });
+                metaData.children = children;
+                console.log(metaData);
+                return [4 /*yield*/, Request
+                        .post(app_config_1.AppConfig.reqUrl + "/mapi/v1/classify-new")
+                        .send({
+                        classifyTitle: metaData.classifyTitle,
+                        keyCode: metaData.keyCode,
+                        children: metaData.children
+                    })
+                    /**返回数据 */
+                ];
+            case 2:
+                result = _a.sent();
+                /**返回数据 */
+                ctx.body = result.text;
+                return [2 /*return*/];
+        }
     });
+}); };
+/** 2 返回 0002， 10返回0010 */
+function transformKeyCode(length) {
+    var base = ['0', '0', '0', '0'];
+    base.push(String(length));
+    for (var i = 0; i < length.toString().length; i++) {
+        base.shift();
+    }
+    return base.join('');
 }

@@ -1,8 +1,11 @@
 import * as React from 'react';
+import http from '../../services/http.service';
 import { RouteComponentProps } from 'react-router';
-
 import { Breadcrumb, Form, Input, Icon, Button } from 'antd';
+
+
 import * as DForm from 'antd/lib/form/Form.d';
+import { _IPostClassifyNew, IPostClassifyNew_ } from '../../interface/api.interface';
 
 const FormItem = Form.Item;
 
@@ -15,9 +18,12 @@ class ClassifyNewPage extends React.PureComponent< IProps, { }> {
 
     handleSubmit = (e) => {
         e.preventDefault();
-        this.props.form.validateFields((err, values) => {
+        this.props.form.validateFields((err, values: _IPostClassifyNew ) => {
             if (!err) {
-                console.log('Received values of form: ', values);
+                delete values['keys'];
+                http.post<IPostClassifyNew_>(`/mapi/v1/classify-new`, values )
+                    .do( r => console.log( r ))
+                    .subscribe( )
             }
         })
     }
@@ -25,11 +31,8 @@ class ClassifyNewPage extends React.PureComponent< IProps, { }> {
     add = ( ) => {
         this.uuid++ ;
         const { form } = this.props;
-        // can use data-binding to get
         const keys = form.getFieldValue('keys');
         const nextKeys = keys.concat( this.uuid );
-        // can use data-binding to set
-        // important! notify form to detect changes
         form.setFieldsValue({
             keys: nextKeys,
         });
@@ -41,8 +44,8 @@ class ClassifyNewPage extends React.PureComponent< IProps, { }> {
         const keys = getFieldValue('keys');
 
         const formItems = keys.map(( k, index ) => {
-            return <FormItem key={ k } label={ k }>
-                {getFieldDecorator(`${k}`, {
+            return <FormItem key={ k-1 } label={ k-1 }>
+                {getFieldDecorator(`${k-1}`, {
                     validateTrigger: ['onChange', 'onBlur'],
                     rules: [
                         { required: true, message: 'Please input Classify' }
@@ -66,7 +69,7 @@ class ClassifyNewPage extends React.PureComponent< IProps, { }> {
                             { required: true, message: 'Please input ClassifyTitle' }
                         ]
                     })(
-                        <Input prefix={<Icon type="logout" style={{ fontSize: 16 }} />}  placeholder="classify title" />
+                        <Input  placeholder="classify title" />
                     )}
                 </FormItem>
                 <p>分类子类别:</p>
