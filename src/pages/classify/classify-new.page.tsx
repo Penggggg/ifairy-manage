@@ -105,6 +105,7 @@ class ClassifyNewPage extends React.PureComponent< IProps, { }> {
                         </FormItem>
                     })
                 }
+                <img src={getFieldValue(`${outerkey}-imgURL`)} style={{ width: '100px'}} />
             </div>
         })
 
