@@ -40,15 +40,26 @@ var Request = require("superagent");
 var app_config_1 = require("../../config/app.config");
 /**类别-新增 */
 exports.classifyNew = function (ctx) { return __awaiter(_this, void 0, void 0, function () {
-    var classifyTitle, allClassify, allClassifyLength, metaData, classifyChildren, children, result;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var classifyTitle, children, allClassify, allClassifyLength, classifyHasExist, metaData, decoratedChildren, result, _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
-                classifyTitle = ctx.request.body.classifyTitle;
+                classifyTitle = (_a = ctx.request.body, _a.classifyTitle), children = _a.children;
                 return [4 /*yield*/, Request.get(app_config_1.AppConfig.reqUrl + "/mapi/v1/classify-all")];
             case 1:
-                allClassify = _a.sent();
+                allClassify = _b.sent();
                 allClassifyLength = allClassify.body.length;
+                return [4 /*yield*/, Request
+                        .get(app_config_1.AppConfig.reqUrl + "/mapi/v1/classify-exist")
+                        .query({ classifyTitle: classifyTitle })];
+            case 2:
+                classifyHasExist = _b.sent();
+                if (classifyHasExist.body) {
+                    return [2 /*return*/, ctx.body = {
+                            msg: 'classifyHasExisted',
+                            status: '400'
+                        }];
+                }
                 metaData = {
                     classifyTitle: '',
                     keyCode: '',
@@ -57,13 +68,13 @@ exports.classifyNew = function (ctx) { return __awaiter(_this, void 0, void 0, f
                 /**赋值 */
                 metaData.classifyTitle = classifyTitle;
                 metaData.keyCode = transformKeyCode(allClassifyLength);
-                classifyChildren = ctx.request.body;
-                delete classifyChildren['classifyTitle'];
-                children = Object.keys(classifyChildren).map(function (key) { return ({
-                    classifyName: ctx.request.body["" + key],
-                    keyCode: transformKeyCode(Number(key))
+                decoratedChildren = children.map(function (child) { return ({
+                    imgURL: child.imgURL,
+                    classifyName: child.classifyName,
+                    classifyInfo: child.classifyInfo,
+                    keyCode: transformKeyCode(child.key)
                 }); });
-                metaData.children = children;
+                metaData.children = decoratedChildren;
                 console.log(metaData);
                 return [4 /*yield*/, Request
                         .post(app_config_1.AppConfig.reqUrl + "/mapi/v1/classify-new")
@@ -74,8 +85,8 @@ exports.classifyNew = function (ctx) { return __awaiter(_this, void 0, void 0, f
                     })
                     /**返回数据 */
                 ];
-            case 2:
-                result = _a.sent();
+            case 3:
+                result = _b.sent();
                 /**返回数据 */
                 ctx.body = result.text || {
                     msg: 'error',

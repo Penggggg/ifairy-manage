@@ -37,11 +37,13 @@ class HttpService {
 
         /**开启xhr */
         xhr.open( 'POST', `${clientConfig.reqURL}${url}`, true );
-        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        // xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        // xhr.send( postBody );
+
+        xhr.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+        xhr.send(JSON.stringify(queryOpt));
+
         console.info(`sending http-POST: ${url}`);
-
-        xhr.send( postBody );
-
         return data$;
     }
 
